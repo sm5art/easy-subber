@@ -6,7 +6,7 @@ def select_video_file():
     video_file_dialog = filedialog.askopenfilename(
         title="Select a video file",
         initialdir="~/",
-        filetypes=[("Video files", "*.mp4 *.avi *.mkv *.m4a")]
+        filetypes=[("Video files", "*.mp4 *.avi *.mkv *.m4a *.mp3")]
     )
     return video_file_dialog
 

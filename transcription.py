@@ -1,4 +1,6 @@
 import whisper
+from whisper.utils import get_writer 
+
 
 def format_timestamp(seconds):
     """Format the timestamp in HH:MM:SS,SSS format."""
@@ -9,16 +11,19 @@ def format_timestamp(seconds):
 def transcribe_audio(audio_file, save_path, model_name, language):
     """Transcribe the audio and save the subtitles to a file."""
     model = whisper.load_model(model_name)
-    result = model.transcribe(audio_file, language=language, verbose=False)
-
+    result = model.transcribe(audio_file, language=language, word_timestamps=True, verbose=False)
     segments = result.get('segments', [])
-
+    print(segments)
     # Save the subtitles to a file
     with open(save_path, "w") as f:
-        for i, segment in enumerate(segments):
-            start = segment['start']
-            end = segment['end']
-            text = segment['text']
-            start_time = format_timestamp(start)
-            end_time = format_timestamp(end)
-            f.write(f"{i+1}\n{start_time} --> {end_time}\n{text}\n\n")
+        i = 0
+        for segment in segments:
+            words = segment.get('words', [])
+            for word in words:
+                start = word['start']
+                end = word['end']
+                text = word['word']
+                start_time = format_timestamp(start)
+                end_time = format_timestamp(end)
+                f.write(f"{i+1}\n{start_time} --> {end_time}\n{text}\n\n")
+                i += 1
