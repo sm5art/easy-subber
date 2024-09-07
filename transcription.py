@@ -18,6 +18,7 @@ def transcribe_audio(audio_file, save_path, model_name, language):
     with open(save_path, "w") as f:
         i = 0
         for segment in segments:
+            # TODO: Add a parameter num_of_words_per_line and combine words into one line here
             words = segment.get('words', [])
             for word in words:
                 start = word['start']
