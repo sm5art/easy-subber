@@ -8,7 +8,7 @@ def format_timestamp(seconds):
     h, m = divmod(m, 60)
     return f"{int(h):02d}:{int(m):02d}:{s:06.3f}"
 
-def transcribe_audio(audio_file, save_path, model_name, language):
+def transcribe_audio(audio_file, save_path, model_name, language, num_of_words_per_line=5):
     """Transcribe the audio and save the subtitles to a file."""
     model = whisper.load_model(model_name)
     result = model.transcribe(audio_file, language=language, word_timestamps=True, verbose=False)
@@ -21,10 +21,14 @@ def transcribe_audio(audio_file, save_path, model_name, language):
             # TODO: Add a parameter num_of_words_per_line and combine words into one line here
             # also include the exisitng segments method if -1 is passed.
             words = segment.get('words', [])
-            for word in words:
-                start = word['start']
-                end = word['end']
-                text = word['word']
+            # split words into lines with num_of_words_per_line variable
+            lines = []
+            for i in range(0, len(words), num_of_words_per_line):
+                lines.append(words[i:i+num_of_words_per_line])
+            for line in lines:
+                start = line[0]['start']
+                end = line[-1]['end']
+                text = "".join([w['word'] for w in line])
                 start_time = format_timestamp(start)
                 end_time = format_timestamp(end)
                 f.write(f"{i+1}\n{start_time} --> {end_time}\n{text}\n\n")
